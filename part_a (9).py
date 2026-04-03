@@ -57,3 +57,26 @@ plt.ylabel('Accuracy')
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
 
+
+from sklearn.model_selection import cross_val_score
+import pandas as pd
+
+models = [
+    ('LR', LogisticRegression()),
+    ('KNN', KNeighborsClassifier()),
+    ('SVM', SVC()),
+    ('DT', DecisionTreeClassifier()),
+    ('RF', RandomForestClassifier(random_state=42)),
+    ('GBM', GradientBoostingClassifier(random_state=42)),
+    ('Ada', AdaBoostClassifier(random_state=42)),
+    ('NB', GaussianNB())
+]
+
+results_dict = {}
+for name, model in models:
+    cv_scores = cross_val_score(model, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    results_dict[name] = cv_scores.mean()
+
+ranking_df = pd.Series(results_dict).sort_values(ascending=False).to_frame(name='CV Accuracy')
+display(ranking_df)
+
