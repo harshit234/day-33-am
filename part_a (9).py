@@ -27,3 +27,33 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
+
+models = [
+    ('LR', LogisticRegression()),
+    ('KNN', KNeighborsClassifier()),
+    ('SVM', SVC()),
+    ('DT', DecisionTreeClassifier()),
+    ('RF', RandomForestClassifier()),
+    ('GBM', GradientBoostingClassifier()),
+    ('Ada', AdaBoostClassifier()),
+    ('NB', GaussianNB())
+]
+
+
+results = []
+names = []
+print("Cross-Validation Accuracy:")
+for name, model in models:
+    cv_results = cross_val_score(model, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    results.append(cv_results)
+    names.append(name)
+    print(f"{name}: {cv_results.mean():.4f} ({cv_results.std():.4f})")
+
+
+fig = plt.figure(figsize=(12, 6))
+plt.title('Algorithm Comparison (Accuracy)')
+plt.boxplot(results, labels=names, patch_artist=True)
+plt.ylabel('Accuracy')
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
